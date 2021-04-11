@@ -5,8 +5,12 @@ import shortid from 'shortid';
 function App() {
   const [task, setTask] = useState("");
   const [tasks, setTasks] = useState([])
-//start add tasks
-  const addTasks = (e) => {
+  //edit
+  const [editMode, setEditMode] = useState(false)
+  const [id, setId] = useState("")
+  
+//start add task
+  const addTask = (e) => {
     e.preventDefault()
 
     if (isEmpty(task)) {
@@ -20,15 +24,40 @@ function App() {
     setTasks([...tasks, newTask])
     setTask("")
   };
-  //end add tasks
+  //end add task
 
-  //start delete tasks
-
+  //start delete task
   const deleteTask = (id) => {
-    const filterTasks = tasks.filter(task => task.id !== id)
-    setTasks(filterTasks)
+      const filterTasks = tasks.filter(task => task.id !== id)
+      setTasks(filterTasks)
+    }
+  //end delete task
+
+  //start edit task
+   const editTask = (theTask) => {
+    setTask(theTask.name)
+    setEditMode(true)
+    setId(theTask.id)
   }
-  //end delete tasks
+  //end edit tasks
+
+  //start save task
+  const saveTask = (e) => {
+    e.preventDefault()
+
+    if (isEmpty(task)) {
+      console.log("task empty")
+      return
+    }
+
+    const editedTask = tasks.map(item => item.id === id ? {id, name: task} : item)
+    setTasks(editedTask)
+    setEditMode(false)
+    setTask("")
+    setId("")
+  };
+  //end save task
+
   return (
     <div className="container mt-5">
       <h1 className="text-center">HOMEWORKS</h1>
@@ -56,6 +85,7 @@ function App() {
                             <button 
                               className="btn badge-warning btn-sm float-right" 
                               type=""
+                              onClick ={() => editTask(task)}
                             >
                               Edit
                             </button>
@@ -67,8 +97,10 @@ function App() {
                }
           </div>
         <div className="col-4">
-          <h4 className="text-center">From</h4>
-          <form onSubmit={addTasks}>
+          <h4 className="text-center">
+            {editMode ? "Edit task" : "Add Task"}
+          </h4>
+          <form onSubmit={editMode ? saveTask : addTask}>
             <input 
             type="text" 
             name="form-task"
@@ -79,8 +111,10 @@ function App() {
             
             <button
              type="submit" 
-             className="btn btn-dark btn-block"
-             >Agregar</button>
+             className={editMode ? "btn btn-success btn-block" : "btn btn-secondary btn-block"}
+             >
+               {editMode ? "Save" : "Add"}
+              </button>
           </form>
         </div>
     </div>    

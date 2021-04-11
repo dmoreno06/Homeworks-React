@@ -1,11 +1,11 @@
 import React,{useState} from 'react';
-import {isEmpty} from 'lodash';
+import {isEmpty, size} from 'lodash';
 import shortid from 'shortid';
 
 function App() {
   const [task, setTask] = useState("");
   const [tasks, setTasks] = useState([])
-
+//start add tasks
   const addTasks = (e) => {
     e.preventDefault()
 
@@ -20,7 +20,15 @@ function App() {
     setTasks([...tasks, newTask])
     setTask("")
   };
+  //end add tasks
 
+  //start delete tasks
+
+  const deleteTask = (id) => {
+    const filterTasks = tasks.filter(task => task.id !== id)
+    setTasks(filterTasks)
+  }
+  //end delete tasks
   return (
     <div className="container mt-5">
       <h1 className="text-center">HOMEWORKS</h1>
@@ -28,17 +36,35 @@ function App() {
         <div className="row">
           <div className="col-8">
             <h4 className="text-center">List of tasks</h4>
-            <ul className="list-group">
-              {
-                tasks.map((task) => (
-                <li className="list-group-item" key={task.id}>
-                  <samp className="lead">{task.name}</samp>
-                  <button className="btn badge-danger btn-sm float-right mx-2" type="">Delete</button>
-                  <button className="btn badge-warning btn-sm float-right" type="">Edit</button>
-                </li>
-              ) )
-              }
-            </ul> 
+            {   
+              size(tasks) === 0 ?
+               (
+                  <h5 className="text-center">no scheduled tasks</h5>
+                ) : (
+                      <ul className="list-group">
+                        {
+                          tasks.map((task) => (
+                          <li className="list-group-item" key={task.id}>
+                            <samp className="lead">{task.name}</samp>
+                            <button 
+                              className="btn badge-danger btn-sm float-right mx-2" 
+                              type=""
+                              onClick ={() => deleteTask(task.id)}
+                              >
+                                Delete
+                            </button>
+                            <button 
+                              className="btn badge-warning btn-sm float-right" 
+                              type=""
+                            >
+                              Edit
+                            </button>
+                          </li>
+                        ) )
+                        }
+                      </ul>
+                    )
+               }
           </div>
         <div className="col-4">
           <h4 className="text-center">From</h4>

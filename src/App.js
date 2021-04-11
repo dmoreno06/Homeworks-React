@@ -1,6 +1,26 @@
-import React from 'react';
+import React,{useState} from 'react';
+import {isEmpty} from 'lodash';
+import shortid from 'shortid';
 
 function App() {
+  const [task, setTask] = useState("");
+  const [tasks, setTasks] = useState([])
+
+  const addTasks = (e) => {
+    e.preventDefault()
+
+    if (isEmpty(task)) {
+      console.log("task empty")
+      return
+    }
+    const newTask ={
+      id: shortid.generate(),
+      name: task
+    }
+    setTasks([...tasks, newTask])
+    setTask("")
+  };
+
   return (
     <div className="container mt-5">
       <h1 className="text-center">HOMEWORKS</h1>
@@ -9,22 +29,28 @@ function App() {
           <div className="col-8">
             <h4 className="text-center">List of tasks</h4>
             <ul className="list-group">
-              <li className="list-group-item">
-                <samp className="lead">Tasks name</samp>
-                <button className="btn badge-danger btn-sm float-right mx-2" type="">Delete</button>
-                <button className="btn badge-warning btn-sm float-right" type="">Edit</button>
-              </li>
+              {
+                tasks.map((task) => (
+                <li className="list-group-item" key={task.id}>
+                  <samp className="lead">{task.name}</samp>
+                  <button className="btn badge-danger btn-sm float-right mx-2" type="">Delete</button>
+                  <button className="btn badge-warning btn-sm float-right" type="">Edit</button>
+                </li>
+              ) )
+              }
             </ul> 
           </div>
         <div className="col-4">
           <h4 className="text-center">From</h4>
-          <form>
+          <form onSubmit={addTasks}>
             <input 
             type="text" 
             name="form-task"
             className ="form-control mb-2"
-            value=""
-            placeholder="Ingrese la tarea.."/>
+            placeholder="Ingrese la tarea.."
+            onChange={(text) => setTask(text.target.value)}
+            value={task}/>
+            
             <button
              type="submit" 
              className="btn btn-dark btn-block"

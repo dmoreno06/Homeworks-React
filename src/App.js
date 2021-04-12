@@ -8,15 +8,26 @@ function App() {
   //edit
   const [editMode, setEditMode] = useState(false)
   const [id, setId] = useState("")
-  
+  //status error
+  const [error, setError] = useState(null)
+
+  const validForm =() => {
+    let isValid = true
+    setError(null)
+    if(isEmpty(task)){
+      setError("You must enter a task.")
+      isValid = false
+    }
+    return isValid
+  }
 //start add task
   const addTask = (e) => {
     e.preventDefault()
 
-    if (isEmpty(task)) {
-      console.log("task empty")
+    if(!validForm()){
       return
     }
+
     const newTask ={
       id: shortid.generate(),
       name: task
@@ -68,7 +79,7 @@ function App() {
             {   
               size(tasks) === 0 ?
                (
-                  <h5 className="text-center">no scheduled tasks</h5>
+                  <li className="list-group-item">no scheduled tasks</li>
                 ) : (
                       <ul className="list-group">
                         {
@@ -101,14 +112,18 @@ function App() {
             {editMode ? "Edit task" : "Add Task"}
           </h4>
           <form onSubmit={editMode ? saveTask : addTask}>
+          {
+              error && <span className="text-danger mb-2">{error}</span>
+            }
             <input 
             type="text" 
             name="form-task"
             className ="form-control mb-2"
             placeholder="Ingrese la tarea.."
             onChange={(text) => setTask(text.target.value)}
-            value={task}/>
-            
+            value={task}
+            />
+           
             <button
              type="submit" 
              className={editMode ? "btn btn-success btn-block" : "btn btn-secondary btn-block"}

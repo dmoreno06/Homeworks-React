@@ -1,8 +1,8 @@
 import React,{useState, useEffect} from 'react';
 
 import {isEmpty, size} from 'lodash';
-import shortid from 'shortid';
-import { getCollection } from './actions';
+//import shortid from 'shortid';
+import { addDocument, getCollection } from './actions';
 
 function App() {
   const [task, setTask] = useState("");
@@ -12,12 +12,14 @@ function App() {
   const [id, setId] = useState("")
   //status error
   const [error, setError] = useState(null)
-
+//asing task
   useEffect(()=>{
     (async () =>{
       const result = await getCollection('tasks')
-      setTasks(result.data)
-      console.log(result)
+      if (result.statusResponse){
+        setTasks(result.data)
+      }
+      //console.log(result)
     })()
   }, [])
 
@@ -31,18 +33,26 @@ function App() {
     return isValid
   }
 //start add task
-  const addTask = (e) => {
+  const addTask = async(e) => {
     e.preventDefault()
 
     if(!validForm()){
       return
     }
-
-    const newTask ={
+//call dates
+const result = await addDocument("tasks", {name: task})
+if(!result.statusResponse){
+  setError(result.error)
+  return
+}
+  /*  newTask in memory
+   const newTask ={
       id: shortid.generate(),
       name: task
-    }
-    setTasks([...tasks, newTask])
+    } */
+
+    //newTask in bd
+    setTasks([...tasks, {id: result.data.id, name: task}])
     setTask("")
   };
   //end add task

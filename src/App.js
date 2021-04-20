@@ -2,7 +2,7 @@ import React,{useState, useEffect} from 'react';
 
 import {isEmpty, size} from 'lodash';
 //import shortid from 'shortid';
-import { addDocument, getCollection, updateDocument } from './actions';
+import { addDocument, deleteDocument, getCollection, updateDocument } from './actions';
 
 function App() {
   const [task, setTask] = useState("");
@@ -51,7 +51,12 @@ function App() {
   //end add task
 
   //start delete task
-  const deleteTask = (id) => {
+  const deleteTask = async(id) => {
+    const result = await deleteDocument("tasks", id)
+    if(!result.statusResponse ){
+      setError(result.error)
+      return
+    }
       const filterTasks = tasks.filter(task => task.id !== id)
       setTasks(filterTasks)
     }

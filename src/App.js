@@ -2,7 +2,7 @@ import React,{useState, useEffect} from 'react';
 
 import {isEmpty, size} from 'lodash';
 //import shortid from 'shortid';
-import { addDocument, getCollection } from './actions';
+import { addDocument, getCollection, updateDocument } from './actions';
 
 function App() {
   const [task, setTask] = useState("");
@@ -35,25 +35,18 @@ function App() {
 //start add task
   const addTask = async(e) => {
     e.preventDefault()
-
     if(!validForm()){
       return
     }
-//call dates
-const result = await addDocument("tasks", {name: task})
-if(!result.statusResponse){
-  setError(result.error)
-  return
-}
-  /*  newTask in memory
-   const newTask ={
-      id: shortid.generate(),
-      name: task
-    } */
-
-    //newTask in bd
-    setTasks([...tasks, {id: result.data.id, name: task}])
-    setTask("")
+      //call dates
+    const result = await addDocument("tasks", {name: task})
+      if(!result.statusResponse){
+        setError(result.error)
+        return
+      }
+      //newTask in bd
+      setTasks([...tasks, {id: result.data.id, name: task}])
+      setTask("")
   };
   //end add task
 
@@ -72,22 +65,25 @@ if(!result.statusResponse){
   }
   //end edit tasks
 
-  //start save task
-  const saveTask = (e) => {
-    e.preventDefault()
-
-    if (isEmpty(task)) {
-      console.log("task empty")
-      return
-    }
-
-    const editedTask = tasks.map(item => item.id === id ? {id, name: task} : item)
-    setTasks(editedTask)
-    setEditMode(false)
-    setTask("")
-    setId("")
-  };
-  //end save task
+    //start save task DB
+    const saveTask = async(e) => {
+      e.preventDefault()
+      if (isEmpty(task)) {
+        console.log("task empty")
+        return
+      }
+      const result = await updateDocument("tasks", id, {name: task})
+      if(!result.statusResponse){
+        setError(result.error)
+        return
+      }
+      const editedTask = tasks.map(item => item.id === id ? {id, name: task} : item)
+      setTasks(editedTask)
+      setEditMode(false)
+      setTask("")
+      setId("")
+    };
+    //end save task
 
   return (
     <div className="container mt-5">

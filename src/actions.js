@@ -42,3 +42,40 @@ export const addDocument = async(collection, data) => {
     return result
 
 }
+// task in data base
+export const getDocument = async(collection, id) => {
+    const result = {
+        statusResponse: false, 
+        data: null, 
+        error: null
+    }
+    try{
+        const response = await db.collection(collection).doc(id).get()
+        result.data = {
+            id: response.id, ...response.data()
+        }
+        result.statusResponse = true;
+    }
+    catch (error){
+        result.error = error;
+    }
+    return result
+
+}
+//update task in data base
+export const updateDocument = async(collection, id, data) => {
+    const result = {
+        statusResponse: false, 
+        data: null, 
+        error: null
+    }
+    try{
+        await db.collection(collection).doc(id).update(data)
+        result.statusResponse = true;
+    }
+    catch (error){
+        result.error = error;
+    }
+    return result
+
+}
